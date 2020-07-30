@@ -730,7 +730,6 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             }
         }
 
-
         legend.setCustom(legenedEntries)
         legend.setYOffset(0f)
         legend.setXOffset(0f)
