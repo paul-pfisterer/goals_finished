@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
@@ -23,6 +24,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
     private lateinit var drawer: DrawerLayout
@@ -61,6 +64,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         chartData.setNoDataText("")
         chartDataChallenge.setNoDataText("")
         chartDataWeekly.setNoDataText("")
+
         //Setup Database
         CoroutineScope(IO).launch {
             val dailyGoals: List<Daily> = db.dailyGoals().getAll()
@@ -71,6 +75,9 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
             }
         }
+
+
+
     }
 
     fun finishedLoading(dailyGoals: List<Daily>, weeklyGoals: List<Weekly>, challengeGoals: List<Challenge>) {
@@ -111,9 +118,10 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             challengeDone.add(it.sunday)
         }
 
-        populateGraphData()
+        graphDaily()
         graphWeekly()
         graphChallenge()
+
 
     }
 
@@ -121,13 +129,8 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     fun graphChallenge(){
         var barChartView = findViewById<BarChart>(R.id.chartDataChallenge)
         val barWidth: Float
-        val barSpace: Float
-        val groupSpace: Float
-        val groupCount = 7
 
-        barWidth = 0.30f
-        barSpace = 0.06f
-        groupSpace = 0.60f
+        barWidth = 0.5f
 
         var xAxisValues = ArrayList<String>()
         xAxisValues.add("Mon")
@@ -138,70 +141,137 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         xAxisValues.add("Sa")
         xAxisValues.add("So")
 
-
         var yValueGroup1 = ArrayList<BarEntry>()
-
-        // var operation = yValueGroup1
 
         // draw the graph
         var barDataSet1: BarDataSet
 
-
         var start = 0
         var end = 6
 
+        var size = challengeDone.size
 
-        /*
-        // for every different thing
+        var value1 = 0.0
+        var value2 = 0.0
+        var value3 = 0.0
+        var value4 = 0.0
+        var value5 = 0.0
+        var value6 = 0.0
+        var value7 = 0.0
+
+
+        // for every different goal
         for(j in 0 until challengeNames.size) {
+
             if (!challengeDone.isEmpty()) {
-                // everyday of the week
+
+                // everyday of the week (monday - sunday)
                 for (i in start..end) {
-                    var value = challengeDone.get(i)
-                    when (i % 7) {
-                        1 -> operation.add(BarEntry(2f, floatArrayOf(value.toFloat())))
-                        2 -> operation.add(BarEntry(3f, floatArrayOf(value.toFloat())))
-                        3 -> operation.add(BarEntry(4f, floatArrayOf(value.toFloat())))
-                        4 -> operation.add(BarEntry(5f, floatArrayOf(value.toFloat())))
-                        5 -> operation.add(BarEntry(6f, floatArrayOf(value.toFloat())))
-                        6 -> {
-                            operation.add(BarEntry(7f, floatArrayOf(value.toFloat())))
-                            if(end < challengeDone.size){
-                                //  start += 7
-                                //  end += 7
-                                // zum nächsten
-                                // operation = ArrayList<BarEntry>()
-                            }
+
+                    // check how many goals the user has and get values
+                    when(size){
+
+                        // 1 goal
+                        7 -> {
+                            value1 = challengeDone.get(i)
                         }
-                        0 -> operation.add(BarEntry(1f, floatArrayOf(value.toFloat())))
+                        // 2 goals
+                        14 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                        }
+                        // 3 goals
+                        21 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                            value3 = challengeDone.get(i+14)
+                        }
+                        // 4 goals
+                        28 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                            value3 = challengeDone.get(i+14)
+                            value4 = challengeDone.get(i+21)
+                        }
+                        // 5 goals
+                        35 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                            value3 = challengeDone.get(i+14)
+                            value4 = challengeDone.get(i+21)
+                            value5 = challengeDone.get(i+28)
+                        }
+                        // 6 goals
+                        42 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                            value3 = challengeDone.get(i+14)
+                            value4 = challengeDone.get(i+21)
+                            value5 = challengeDone.get(i+28)
+                            value6 = challengeDone.get(i+35)
+                        }
+                        // 7 goals
+                        49 -> {
+                            value1 = challengeDone.get(i)
+                            value2 = challengeDone.get(i+7)
+                            value3 = challengeDone.get(i+14)
+                            value4 = challengeDone.get(i+21)
+                            value5 = challengeDone.get(i+28)
+                            value6 = challengeDone.get(i+35)
+                            value7 = challengeDone.get(i+42)
+                        }
                     }
+
+                    //allocate values to specific day of the week
+                    when (i % 7) {
+
+                        1 -> yValueGroup1.add(BarEntry(2f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        2 -> yValueGroup1.add(BarEntry(3f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat() )))
+
+                        3 -> yValueGroup1.add(BarEntry(4f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        4 -> yValueGroup1.add(BarEntry(5f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        5 -> yValueGroup1.add(BarEntry(6f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        6 -> yValueGroup1.add(BarEntry(7f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        0 -> yValueGroup1.add(BarEntry(1f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                    }
+
                 }
+
             }
+
+
         }
-        */
-
-        yValueGroup1.add(BarEntry(1f, floatArrayOf(5.toFloat())))
-        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(3f, floatArrayOf(15.toFloat())))
-        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
-
-
-
 
 
         barDataSet1 = BarDataSet(yValueGroup1, "Test")
+        barDataSet1.setColors(Color.CYAN, Color.BLUE, Color.WHITE, ContextCompat.getColor(this, R.color.colorRoyalBlue), ContextCompat.getColor(this, R.color.colorPink), ContextCompat.getColor(this, R.color.colorMediumslateblue), ContextCompat.getColor(this, R.color.colorLightGrey))
 
-        barDataSet1.setColors(Color.CYAN)
-
-        // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
         barDataSet1.setDrawValues(false)
 
+
         var barData = BarData(barDataSet1)
+
         barChartView.data = barData // set the data and list of lables into chart
+
+
+        barChartView.description.isEnabled = false
+        barChartView.description.textSize = 0f
+        barData.setValueFormatter(LargeValueFormatter())
+        barChartView.setData(barData)
+        barChartView.getBarData().setBarWidth(barWidth)
+        barChartView.getXAxis().setAxisMinimum(0f)
+        barChartView.getXAxis().setAxisMaximum(7f)
+
+        barChartView.getData().setHighlightEnabled(false)
+        barChartView.invalidate()
+
 
 
         // set bar label
@@ -212,32 +282,43 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         legend.setDrawInside(false)
 
         var legenedEntries = arrayListOf<LegendEntry>()
-        legenedEntries.add(LegendEntry("Laufen", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
-        /*
+
         // legend for different color per goal
         if(!challengeNames.isEmpty()){
+
             for(i in 0 until challengeNames.size){
+
                 when(i%7){
-                    0 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.RED))
+
+                    0 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
+
                     1 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.BLUE))
-                    2 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.GREEN))
-                    3 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
-                    4 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.MAGENTA))
-                    5 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
-                    6 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.YELLOW))
+
+                    2 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
+
+                    3 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorRoyalBlue)))
+
+                    4 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorPink)))
+
+                    5 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorMediumslateblue)))
+
+                    6 -> legenedEntries.add(LegendEntry(challengeNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorLightGrey)))
+
                 }
+
             }
         }
-         */
 
+
+        // in liste drinnen
         legend.setCustom(legenedEntries)
-        legend.setYOffset(5f)
-        legend.setXOffset(5f)
-        legend.setYEntrySpace(5f)
+        legend.setYOffset(0f)
+        legend.setXOffset(0f)
+        legend.setYEntrySpace(0f)
         legend.setTextSize(5f)
-        legend.xEntrySpace = 20f
+        legend.xEntrySpace = 10f
 
 
         // x Axis
@@ -255,21 +336,16 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         xAxis.mAxisMaximum = 7f
         xAxis.setCenterAxisLabels(true)
         xAxis.setAvoidFirstLastClipping(true)
-        xAxis.spaceMin = 4f
-        xAxis.spaceMax = 4f
+        xAxis.spaceMin = 3f
+        xAxis.spaceMax = 3f
     }
 
     // statistic weekly goals
     fun graphWeekly(){
         var barChartView = findViewById<BarChart>(R.id.chartDataWeekly)
         val barWidth: Float
-        val barSpace: Float
-        val groupSpace: Float
-        val groupCount = 7
 
-        barWidth = 0.30f
-        barSpace = 0.06f
-        groupSpace = 0.60f
+        barWidth = 0.5f
 
         var xAxisValues = ArrayList<String>()
         xAxisValues.add("Mon")
@@ -283,7 +359,6 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var yValueGroup1 = ArrayList<BarEntry>()
 
-        var operation = yValueGroup1
 
         // draw the graph
         var barDataSet1: BarDataSet
@@ -292,51 +367,110 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         var start = 0
         var end = 6
 
-        /*
-        // for every different thing
+        var size = weekDone.size
+
+        var value1 = 0.0
+        var value2 = 0.0
+        var value3 = 0.0
+        var value4 = 0.0
+        var value5 = 0.0
+        var value6 = 0.0
+        var value7 = 0.0
+
+
+        // for every different goal
         for(j in 0 until weekNames.size) {
+
+
             if (!weekDone.isEmpty()) {
-                // everyday of the week
+
+                // everyday of the week (monday - sunday)
                 for (i in start..end) {
-                    var value = weekDone.get(i)
-                    when (i % 7) {
-                        1 -> operation.add(BarEntry(2f, floatArrayOf(value.toFloat())))
-                        2 -> operation.add(BarEntry(3f, floatArrayOf(value.toFloat())))
-                        3 -> operation.add(BarEntry(4f, floatArrayOf(value.toFloat())))
-                        4 -> operation.add(BarEntry(5f, floatArrayOf(value.toFloat())))
-                        5 -> operation.add(BarEntry(6f, floatArrayOf(value.toFloat())))
-                        6 -> {
-                            operation.add(BarEntry(7f, floatArrayOf(value.toFloat())))
-                            if(end < weekDone.size){
-                                //  start += 7
-                                //  end += 7
-                                // zum nächsten
-                                // operation = ArrayList<BarEntry>()
-                            }
+
+
+                    // check how many goals the user has and get values
+                    when(size){
+
+                        // 1 goal
+                        7 -> {
+                            value1 = weekDone.get(i)
                         }
-                        0 -> operation.add(BarEntry(1f, floatArrayOf(value.toFloat())))
+                        // 2 goals
+                        14 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                        }
+                        // 3 goals
+                        21 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                            value3 = weekDone.get(i+14)
+                        }
+                        // 4 goals
+                        28 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                            value3 = weekDone.get(i+14)
+                            value4 = weekDone.get(i+21)
+                        }
+                        // 5 goals
+                        35 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                            value3 = weekDone.get(i+14)
+                            value4 = weekDone.get(i+21)
+                            value5 = weekDone.get(i+28)
+                        }
+                        // 6 goals
+                        42 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                            value3 = weekDone.get(i+14)
+                            value4 = weekDone.get(i+21)
+                            value5 = weekDone.get(i+28)
+                            value6 = weekDone.get(i+35)
+                        }
+                        // 7 goals
+                        49 -> {
+                            value1 = weekDone.get(i)
+                            value2 = weekDone.get(i+7)
+                            value3 = weekDone.get(i+14)
+                            value4 = weekDone.get(i+21)
+                            value5 = weekDone.get(i+28)
+                            value6 = weekDone.get(i+35)
+                            value7 = weekDone.get(i+42)
+                        }
+                    }
+
+
+                    //allocate values to specific day of the week
+                    when (i % 7) {
+
+                        1 -> yValueGroup1.add(BarEntry(2f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        2 -> yValueGroup1.add(BarEntry(3f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat() )))
+
+                        3 -> yValueGroup1.add(BarEntry(4f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        4 -> yValueGroup1.add(BarEntry(5f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        5 -> yValueGroup1.add(BarEntry(6f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        6 -> yValueGroup1.add(BarEntry(7f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        0 -> yValueGroup1.add(BarEntry(1f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
                     }
                 }
             }
+
         }
-         */
 
 
-        yValueGroup1.add(BarEntry(1f, floatArrayOf(30.toFloat())))
-        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(3f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
 
+        barDataSet1 = BarDataSet(yValueGroup1, "Test")
 
-        barDataSet1 = BarDataSet(operation, "Test")
-        //barDataSet1 = BarDataSet(yValueGroup1, "Test")
+        barDataSet1.setColors(Color.CYAN, Color.BLUE, Color.WHITE, ContextCompat.getColor(this, R.color.colorRoyalBlue), ContextCompat.getColor(this, R.color.colorPink), ContextCompat.getColor(this, R.color.colorMediumslateblue), ContextCompat.getColor(this, R.color.colorLightGrey))
 
-        barDataSet1.setColors(Color.CYAN, Color.RED)
-
-        // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
         barDataSet1.setDrawValues(false)
 
@@ -344,6 +478,18 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         barChartView.data = barData // set the data and list of lables into chart
 
 
+        barChartView.description.isEnabled = false
+        barChartView.description.textSize = 0f
+        barData.setValueFormatter(LargeValueFormatter())
+        barChartView.setData(barData)
+        barChartView.getBarData().setBarWidth(barWidth)
+        barChartView.getXAxis().setAxisMinimum(0f)
+        barChartView.getXAxis().setAxisMaximum(7f)
+
+        barChartView.getData().setHighlightEnabled(false)
+        barChartView.invalidate()
+
+
         // set bar label
         var legend = barChartView.legend
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM)
@@ -353,32 +499,40 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var legenedEntries = arrayListOf<LegendEntry>()
 
-        legenedEntries.add(LegendEntry("Trainieren", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
-        /*
         // legend for different color per goal
         if(!weekNames.isEmpty()){
+
             for(i in 0 until weekNames.size){
+
                 when(i%7){
-                    0 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.RED))
+
+                    0 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
+
                     1 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.BLUE))
-                    2 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.GREEN))
-                    3 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
-                    4 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.MAGENTA))
-                    5 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
-                    6 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.YELLOW))
+
+                    2 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
+
+                    3 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorRoyalBlue)))
+
+                    4 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorPink)))
+
+                    5 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorMediumslateblue)))
+
+                    6 -> legenedEntries.add(LegendEntry(weekNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorLightGrey)))
+
                 }
+
             }
         }
-        */
 
         legend.setCustom(legenedEntries)
-        legend.setYOffset(5f)
-        legend.setXOffset(5f)
-        legend.setYEntrySpace(5f)
+        legend.setYOffset(0f)
+        legend.setXOffset(0f)
+        legend.setYEntrySpace(0f)
         legend.setTextSize(5f)
-        legend.xEntrySpace = 20f
+        legend.xEntrySpace = 10f
 
 
         // x Axis
@@ -396,23 +550,16 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         xAxis.mAxisMaximum = 7f
         xAxis.setCenterAxisLabels(true)
         xAxis.setAvoidFirstLastClipping(true)
-        xAxis.spaceMin = 4f
-        xAxis.spaceMax = 4f
+        xAxis.spaceMin = 3f
+        xAxis.spaceMax = 3f
     }
 
     // statistic daily goals
-    fun populateGraphData() {
-
+    fun graphDaily() {
         var barChartView = findViewById<BarChart>(R.id.chartData)
-
         val barWidth: Float
-        val barSpace: Float
-        val groupSpace: Float
-        val groupCount = 7
 
-        barWidth = 0.30f
-        barSpace = 0.06f
-        groupSpace = 0.60f
+        barWidth = 0.5f
 
 
         var xAxisValues = ArrayList<String>()
@@ -427,103 +574,134 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var yValueGroup1 = ArrayList<BarEntry>()
 
-        var yVal2 = ArrayList<BarEntry>()
-
 
         var start = 0
         var end = 6
 
+        var size = dayDone.size
 
-        /*
-        for(j in 0 until dayNames.size){
-             dailyList = arrayListOf(0 until dayNames.size)
-            dailyList.forEach {
-                j -> ArrayList<BarEntry>()
-                var barDataSet: BarDataSet
-            }
-        }
-         */
+        var value1 = 0.0
+        var value2 = 0.0
+        var value3 = 0.0
+        var value4 = 0.0
+        var value5 = 0.0
+        var value6 = 0.0
+        var value7 = 0.0
 
-/*
-        // for every different thing
+
+        // for every different goal
         for(j in 0 until dayNames.size) {
+
             if (!dayDone.isEmpty()) {
+
+                // everyday of the week (monday - sunday)
                 for (i in start..end) {
-                    var value = dayDone.get(i)
-                    when (i % 7) {
-                        1 -> yValueGroup1.add(BarEntry(2f, floatArrayOf(value.toFloat())))
-                        2 -> yValueGroup1.add(BarEntry(3f, floatArrayOf(value.toFloat())))
-                        3 -> yValueGroup1.add(BarEntry(4f, floatArrayOf(value.toFloat())))
-                        4 -> yValueGroup1.add(BarEntry(5f, floatArrayOf(value.toFloat())))
-                        5 -> yValueGroup1.add(BarEntry(6f, floatArrayOf(value.toFloat())))
-                        6 -> {
-                            yValueGroup1.add(BarEntry(7f, floatArrayOf(value.toFloat())))
-                            if(end < dayDone.size){
-                                //  start += 7
-                                //  end += 7
-                                // zum nächsten
-                                // operation = ArrayList<BarEntry>()
-                            }
+
+
+                    // check how many goals the user has and get values
+                    when(size){
+
+                        // 1 goal
+                        7 -> {
+                            value1 = dayDone.get(i)
                         }
-                        0 -> yValueGroup1.add(BarEntry(1f, floatArrayOf(value.toFloat())))
+                        // 2 goals
+                        14 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                        }
+                        // 3 goals
+                        21 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                            value3 = dayDone.get(i+14)
+                        }
+                        // 4 goals
+                        28 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                            value3 = dayDone.get(i+14)
+                            value4 = dayDone.get(i+21)
+                        }
+                        // 5 goals
+                        35 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                            value3 = dayDone.get(i+14)
+                            value4 = dayDone.get(i+21)
+                            value5 = dayDone.get(i+28)
+                        }
+                        // 6 goals
+                        42 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                            value3 = dayDone.get(i+14)
+                            value4 = dayDone.get(i+21)
+                            value5 = dayDone.get(i+28)
+                            value6 = dayDone.get(i+35)
+                        }
+                        // 7 goals
+                        49 -> {
+                            value1 = dayDone.get(i)
+                            value2 = dayDone.get(i+7)
+                            value3 = dayDone.get(i+14)
+                            value4 = dayDone.get(i+21)
+                            value5 = dayDone.get(i+28)
+                            value6 = dayDone.get(i+35)
+                            value7 = dayDone.get(i+42)
+                        }
                     }
-                }
-                // everyday of the week
-                for (i in 7..13) {
-                    var value = dayDone.get(i)
-                    //  dailyList.get(j).add(BarEntry(2f, floatArrayOf(value.toFloat())))
+
+
+                    //allocate values to specific day of the week
                     when (i % 7) {
-                        1 -> yVal2.add(BarEntry(2f, floatArrayOf(value.toFloat())))
-                        2 -> yVal2.add(BarEntry(3f, floatArrayOf(value.toFloat())))
-                        3 -> yVal2.add(BarEntry(4f, floatArrayOf(value.toFloat())))
-                        4 -> yVal2.add(BarEntry(5f, floatArrayOf(value.toFloat())))
-                        5 -> yVal2.add(BarEntry(6f, floatArrayOf(value.toFloat())))
-                        6 -> {
-                            yVal2.add(BarEntry(7f, floatArrayOf(value.toFloat())))
-                            if(end < dayDone.size){
-                                //  start += 7
-                                //  end += 7
-                                // zum nächsten
-                                // operation = ArrayList<BarEntry>()
-                            }
-                        }
-                        0 -> yVal2.add(BarEntry(1f, floatArrayOf(value.toFloat())))
+
+                        1 -> yValueGroup1.add(BarEntry(2f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        2 -> yValueGroup1.add(BarEntry(3f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat() )))
+
+                        3 -> yValueGroup1.add(BarEntry(4f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        4 -> yValueGroup1.add(BarEntry(5f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        5 -> yValueGroup1.add(BarEntry(6f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        6 -> yValueGroup1.add(BarEntry(7f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
+
+                        0 -> yValueGroup1.add(BarEntry(1f, floatArrayOf(value1.toFloat(), value2.toFloat(), value3.toFloat(), value4.toFloat(), value5.toFloat(), value6.toFloat(), value7.toFloat())))
                     }
                 }
             }
-        }
-        */
 
-        yValueGroup1.add(BarEntry(1f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(3f, floatArrayOf(15.toFloat())))
-        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
-        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
+        }
+
 
         // draw the graph
         var barDataSet1: BarDataSet
-        var barDataSet2: BarDataSet
 
         barDataSet1 = BarDataSet(yValueGroup1, "Test")
 
-        barDataSet2 = BarDataSet(yVal2, "")
-        // barDataSet2.setColors(Color.YELLOW, Color.RED)
-        barDataSet2.setDrawIcons(false)
-        barDataSet2.setDrawValues(false)
+        barDataSet1.setColors(Color.CYAN, Color.BLUE, Color.WHITE, ContextCompat.getColor(this, R.color.colorRoyalBlue), ContextCompat.getColor(this, R.color.colorPink), ContextCompat.getColor(this, R.color.colorMediumslateblue), ContextCompat.getColor(this, R.color.colorLightGrey))
 
-        barDataSet1.setColors(Color.CYAN, Color.RED)
-
-        // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
         barDataSet1.setDrawValues(false)
 
-        var barData = BarData(barDataSet1, barDataSet2)
+        var barData = BarData(barDataSet1)
 
         barChartView.data = barData // set the data and list of lables into chart
 
-        //barChartView.groupBars(0f, groupSpace, barSpace)
+
+        barChartView.description.isEnabled = false
+        barChartView.description.textSize = 0f
+        barData.setValueFormatter(LargeValueFormatter())
+        barChartView.setData(barData)
+        barChartView.getBarData().setBarWidth(barWidth)
+        barChartView.getXAxis().setAxisMinimum(0f)
+        barChartView.getXAxis().setAxisMaximum(7f)
+
+        barChartView.getData().setHighlightEnabled(false)
+        barChartView.invalidate()
+
 
         // set bar label
         var legend = barChartView.legend
@@ -535,31 +713,30 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var legenedEntries = arrayListOf<LegendEntry>()
 
-        legenedEntries.add(LegendEntry("Yoga", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
-        /*
         // legend for different color per goal
         if(!dayNames.isEmpty()){
             for(i in 0 until dayNames.size){
                 when(i%7){
-                    0 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.RED))
+                    0 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
                     1 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.BLUE))
-                    2 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.GREEN))
-                    3 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
-                    4 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.MAGENTA))
-                    5 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
-                    6 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.YELLOW))
+                    2 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, Color.WHITE))
+                    3 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorRoyalBlue)))
+                    4 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorPink)))
+                    5 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorMediumslateblue)))
+                    6 -> legenedEntries.add(LegendEntry(dayNames.get(i), Legend.LegendForm.SQUARE, 15f, 15f, null, ContextCompat.getColor(this, R.color.colorLightGrey)))
                 }
             }
         }
-        */
+
 
         legend.setCustom(legenedEntries)
-        legend.setYOffset(5f)
-        legend.setXOffset(5f)
-        legend.setYEntrySpace(5f)
+        legend.setYOffset(0f)
+        legend.setXOffset(0f)
+        legend.setYEntrySpace(0f)
         legend.setTextSize(5f)
+        legend.xEntrySpace = 10f
 
 
         // x Axis
@@ -577,13 +754,13 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         xAxis.mAxisMaximum = 7f
         xAxis.setCenterAxisLabels(true)
         xAxis.setAvoidFirstLastClipping(true)
-        xAxis.spaceMin = 4f
-        xAxis.spaceMax = 4f
+        xAxis.spaceMin = 3f
+        xAxis.spaceMax = 3f
 
-        // barChartView.data = barData
-        // barChartView.setVisibleXRange(1f, 7f)
 
     }
+
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var intent: Intent
@@ -601,7 +778,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 startActivity(intent)
             }
         }
-        return true;
+        return true
     }
 
 

@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Goals</string>
+    <string name="challenge">Challenge</string>
+    <string name="weekly">Weekly</string>
+    <string name="daily">Daily</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
